@@ -81,6 +81,7 @@ Get in touch with us on [Slack](https://ibm-art.slack.com) (invite [here](https:
 **Poisoning Attacks:**
 * Poisoning Attack on SVM ([Biggio et al., 2013](https://arxiv.org/abs/1206.6389))
 * Backdoor Attack ([Gu, et. al., 2017](https://arxiv.org/abs/1708.06733))
+* Feature Collision Attack ([Shafahi, Huang et. al., 2018](https://arxiv.org/pdf/1804.00792.pdf))
 
 **Defences - Preprocessor:**
 * Thermometer encoding ([Buckman et al., 2018](https://openreview.net/forum?id=S18Su--CW))
