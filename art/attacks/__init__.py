@@ -26,6 +26,7 @@ from art.attacks.evasion.frame_saliency import FrameSaliencyAttack
 
 from art.attacks.poisoning.backdoor_attack import PoisoningAttackBackdoor
 from art.attacks.poisoning.poisoning_attack_svm import PoisoningAttackSVM
+from art.attacks.poisoning.feature_collision_attack import FeatureCollisionAttack
 
 from art.attacks.extraction.functionally_equivalent_extraction import FunctionallyEquivalentExtraction
 from art.attacks.extraction.copycat_cnn import CopycatCNN
