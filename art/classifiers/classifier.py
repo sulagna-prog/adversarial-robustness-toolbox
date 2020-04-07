@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (C) IBM Corporation 2018
+# Copyright (C) IBM Corporation 2020
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -438,7 +438,7 @@ class ClassifierNeuralNetwork(abc.ABC, metaclass=input_filter):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_activations(self, x, layer, batch_size):
+    def get_activations(self, x, layer, batch_size, intermediate=False):
         """
         Return the output of the specified layer for input `x`. `layer` is specified by layer index (between 0 and
         `nb_layers - 1`) or by name. The number of layers can be determined by counting the results returned by
@@ -450,9 +450,28 @@ class ClassifierNeuralNetwork(abc.ABC, metaclass=input_filter):
         :type layer: `int` or `str`
         :param batch_size: Size of batches.
         :type batch_size: `int`
+        :param intermediate: if true, return the intermediate tensor representation of the activation
+        :type intermediate: `bool`
         :return: The output of `layer`, where the first dimension is the batch size corresponding to `x`.
         :rtype: `np.ndarray`
         """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def custom_gradient(self, nn_function, vars):
+        """
+        Returns the gradient of the nn_function with respect to vars
+
+        :param nn_function: an intermediate tensor representation of the gradient function
+        :param vars: the variables to differentiate
+        :type vars: `list`
+        :return: the gradient of the function w.r.t vars
+        :rtype: `np.ndarray`
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_input_layer(self):
         raise NotImplementedError
 
     @abc.abstractmethod
