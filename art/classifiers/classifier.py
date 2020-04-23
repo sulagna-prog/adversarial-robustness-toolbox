@@ -484,6 +484,15 @@ class ClassifierNeuralNetwork(abc.ABC, metaclass=input_filter):
         """
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def normalize_tensor(self, tensor):
+        """
+        Normalize an intermediate tensor
+        :param tensor: a tensor
+        :return: a normalized tensor
+        """
+        raise NotImplementedError
+
     def __repr__(self):
         name = self.__class__.__name__
 
