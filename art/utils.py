@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (C) IBM Corporation 2018
+# Copyright (C) IBM Corporation 2020
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -368,6 +368,49 @@ def compute_accuracy(preds, labels, abstain=True):
 
     return acc_rate, coverage_rate
 
+
+# TODO: move this to better place in file or new file
+def get_class_name(obj):
+    """
+    Get the full class name of an object
+    :param obj: a python object
+    :type obj: `object`
+    :return: a qualified class name
+    :rtype: `str`
+    """
+    module = obj.__class__.__module__
+    if module is None or module == str.__class__.__module__:
+        return obj.__class__.__name__
+    else:
+        return module + '.' + obj.__class__.__name__
+
+
+# TODO: this will probably be removed and replaced with localize
+def tensor_norm(tensor, norm_type=2):
+    """
+    Compute the norm of a tensor
+
+    :param tensor: a tensor from a supported ART neural network
+    :param norm_type: order fo the norm
+    :type norm_type: `int` or `string`
+    :return: a tensor with the norm applied
+    """
+    tf_tensor_types = ('tensorflow.python.framework.ops.Tensor',)
+    torch_tensor_types = ()
+    mxnet_tensor_types = ()
+    supported_types = tf_tensor_types + torch_tensor_types + mxnet_tensor_types
+    tensor_type = get_class_name(tensor)
+    if tensor_type in tf_tensor_types:
+        import tensorflow as tf
+        return tf.norm(tensor, ord=norm_type)
+    elif tensor_type in torch_tensor_types:
+        import torch
+        return torch.norm(tensor, p=norm_type)
+    elif tensor_type in mxnet_tensor_types:
+        import mxnet
+        return mxnet.ndarray.norm(tensor, ord=norm_type)
+    else:
+        raise TypeError("Tensor type `" + tensor_type + "` is not supported")
 
 # -------------------------------------------------------------------------------------------------- DATASET OPERATIONS
 
