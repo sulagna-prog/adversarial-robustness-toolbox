@@ -240,7 +240,7 @@ def least_likely_class(x, classifier):
     :return: Least-likely class predicted by `classifier` for sample `x` in one-hot encoding.
     :rtype: `np.ndarray`
     """
-    return to_categorical(np.argmin(classifier.predict(x), axis=1), nb_classes=classifier.nb_classes())
+    return to_categorical(np.argmin(classifier.predict(x), axis=1), nb_classes=classifier.nb_classes)
 
 
 def second_most_likely_class(x, classifier):
@@ -255,7 +255,7 @@ def second_most_likely_class(x, classifier):
     :return: Second most likely class predicted by `classifier` for sample `x` in one-hot encoding.
     :rtype: `np.ndarray`
     """
-    return to_categorical(np.argpartition(classifier.predict(x), -2, axis=1)[:, -2], nb_classes=classifier.nb_classes())
+    return to_categorical(np.argpartition(classifier.predict(x), -2, axis=1)[:, -2], nb_classes=classifier.nb_classes)
 
 
 def get_label_conf(y_vec):
@@ -306,10 +306,10 @@ def compute_success_array(classifier, x_clean, labels, x_adv, targeted=False, ba
     """
     adv_preds = np.argmax(classifier.predict(x_adv, batch_size=batch_size), axis=1)
     if targeted:
-        attack_success = (adv_preds == np.argmax(labels, axis=1))
+        attack_success = adv_preds == np.argmax(labels, axis=1)
     else:
         preds = np.argmax(classifier.predict(x_clean, batch_size=batch_size), axis=1)
-        attack_success = (adv_preds != preds)
+        attack_success = adv_preds != preds
 
     return attack_success
 
@@ -467,8 +467,8 @@ def load_cifar10(raw=False):
     for i in range(1, 6):
         fpath = os.path.join(path, "data_batch_" + str(i))
         data, labels = load_batch(fpath)
-        x_train[(i - 1) * 10000 : i * 10000, :, :, :] = data
-        y_train[(i - 1) * 10000 : i * 10000] = labels
+        x_train[(i - 1) * 10000: i * 10000, :, :, :] = data
+        y_train[(i - 1) * 10000: i * 10000] = labels
 
     fpath = os.path.join(path, "test_batch")
     x_test, y_test = load_batch(fpath)
@@ -533,6 +533,7 @@ def load_stl():
     min_, max_ = 0.0, 1.0
 
     # Download and extract data if needed
+
     path = get_file(
         "stl10_binary",
         path=ART_DATA_PATH,
@@ -599,15 +600,15 @@ def load_iris(raw=False, test_set=0.3):
 
     # Split training and test sets
     split_index = int((1 - test_set) * len(data) / 3)
-    x_train = np.vstack((data[:split_index], data[50 : 50 + split_index], data[100 : 100 + split_index]))
-    y_train = np.vstack((labels[:split_index], labels[50 : 50 + split_index], labels[100 : 100 + split_index]))
+    x_train = np.vstack((data[:split_index], data[50: 50 + split_index], data[100: 100 + split_index]))
+    y_train = np.vstack((labels[:split_index], labels[50: 50 + split_index], labels[100: 100 + split_index]))
 
     if split_index >= 49:
         x_test, y_test = None, None
     else:
 
-        x_test = np.vstack((data[split_index:50], data[50 + split_index : 100], data[100 + split_index :]))
-        y_test = np.vstack((labels[split_index:50], labels[50 + split_index : 100], labels[100 + split_index :]))
+        x_test = np.vstack((data[split_index:50], data[50 + split_index: 100], data[100 + split_index:]))
+        y_test = np.vstack((labels[split_index:50], labels[50 + split_index: 100], labels[100 + split_index:]))
         assert len(x_train) + len(x_test) == 150
 
         # Shuffle test set
@@ -699,6 +700,7 @@ def get_file(filename, url, path=None, extract=False):
         path_ = os.path.expanduser(path)
     if not os.access(path_, os.W_OK):
         path_ = os.path.join("/tmp", ".art")
+
     if not os.path.exists(path_):
         os.makedirs(path_)
 
@@ -718,7 +720,11 @@ def get_file(filename, url, path=None, extract=False):
             try:
                 from six.moves.urllib.error import HTTPError, URLError
                 from six.moves.urllib.request import urlretrieve
+
+                # The following two lines should prevent occasionally occurring
+                # [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:847)
                 import ssl
+
                 ssl._create_default_https_context = ssl._create_unverified_context
 
                 urlretrieve(url, full_path)

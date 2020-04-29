@@ -24,6 +24,7 @@ import numpy as np
 
 from art.poison_detection import ActivationDefence
 from art.utils import load_mnist
+from art.visualization import convert_to_rgb
 
 from tests.utils import master_seed
 
@@ -54,7 +55,7 @@ class TestActivationDefence(unittest.TestCase):
 
         model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-        from art.classifiers import KerasClassifier
+        from art.estimators.classification.keras import KerasClassifier
 
         cls.classifier = KerasClassifier(model=model, clip_values=(min_, max_))
 
@@ -91,7 +92,7 @@ class TestActivationDefence(unittest.TestCase):
         # Get MNIST
         (x_train, _), (_, _), (_, _) = self.mnist
 
-        n_classes = self.classifier.nb_classes()
+        n_classes = self.classifier.nb_classes
         for nb_clusters in range(2, 5):
             clusters_by_class, _ = self.defence.cluster_activations(nb_clusters=nb_clusters)
 
@@ -159,7 +160,7 @@ class TestActivationDefence(unittest.TestCase):
         self.defence.analyze_clusters(cluster_analysis="silhouette-scores")
 
         report, dist_clean_by_class = self.defence.analyze_clusters(cluster_analysis="distance")
-        n_classes = self.classifier.nb_classes()
+        n_classes = self.classifier.nb_classes
         self.assertEqual(n_classes, len(dist_clean_by_class))
 
         # Check right amount of data
@@ -169,7 +170,7 @@ class TestActivationDefence(unittest.TestCase):
         self.assertEqual(len(x_train), n_dp)
 
         report, sz_clean_by_class = self.defence.analyze_clusters(cluster_analysis="smaller")
-        n_classes = self.classifier.nb_classes()
+        n_classes = self.classifier.nb_classes
         self.assertEqual(n_classes, len(sz_clean_by_class))
 
         # Check right amount of data
@@ -237,6 +238,14 @@ class TestActivationDefence(unittest.TestCase):
             self.classifier, x_poison, y_fix, n_splits=2, tolerable_backdoor=0.01, max_epochs=5, batch_epochs=10
         )
         self.assertGreaterEqual(improvement, 0)
+
+    def test_visualizations(self):
+        # test that visualization doesn't error in grayscale and RGB settings
+        (x_train, _), (_, _), (_, _) = self.mnist
+        self.defence.visualize_clusters(x_train)
+
+        x_train_rgb = convert_to_rgb(x_train)
+        self.defence.visualize_clusters(x_train_rgb)
 
 
 if __name__ == "__main__":
