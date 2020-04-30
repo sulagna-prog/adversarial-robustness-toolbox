@@ -22,7 +22,7 @@ import unittest
 
 import numpy as np
 
-from art.defences.detection.poison import ActivationDefence
+from art.defences.detector.poison import ActivationDefence
 from art.utils import load_mnist
 
 from tests.utils import master_seed
